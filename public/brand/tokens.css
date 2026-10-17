@@ -49,3 +49,6 @@ body { font-family: var(--ns-font); font-feature-settings: "tnum"; }
   /* stone is 3.58:1 on white, fails AA for small text; use this for small secondary text */
   --app-stone-text: #6B6862;
 }
+
+/* Stroke weights: 1px by default; 2px only for secondary and danger buttons and selected states */
+:root { --app-stroke: 1px; --app-stroke-strong: 2px; }
