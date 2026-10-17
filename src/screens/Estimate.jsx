@@ -97,7 +97,10 @@ export default function Estimate({ estimate, setEstimate }) {
           )}
         </div>
 
-        <p className="fine">Estimate only. Rates are set each year.</p>
+        <div className="stack-sm">
+          <p className="fine">Estimate only. Rates are set each year.</p>
+          <p className="fine">Generic framework. Not an official Brisbane City Council document.</p>
+        </div>
       </div>
     </Screen>
   );

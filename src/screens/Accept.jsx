@@ -42,6 +42,7 @@ function Before({ delivered, setDelivered, onAccept, onScan, onReject }) {
         <Button variant="specifier" onClick={onAccept}>Accept batch</Button>
         <Button variant="danger" onClick={onReject}>Report a grade mismatch</Button>
       </div>
+      <p className="fine">Generic framework. Not an official Brisbane City Council document.</p>
     </div>
   );
 }
@@ -94,6 +95,7 @@ export default function Accept({ accept, setAccept }) {
         <div className="stack">
           <After />
           <p className="fine">The council receives the acceptance record that closes the claim.</p>
+          <p className="fine">Generic framework. Not an official Brisbane City Council document.</p>
           <Button variant="primary" onClick={() => go('/certificates')}>View certificates</Button>
         </div>
       ) : (
