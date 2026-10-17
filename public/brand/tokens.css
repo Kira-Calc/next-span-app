@@ -1,0 +1,51 @@
+:root {
+  --ns-ink: #111111;
+  --ns-paper: #FFFFFF;
+  --ns-white: #FFFFFF;
+  --ns-stone: #8A8780;
+  --ns-line: #CFCBC3;
+  --ns-grade-a: #1E5AA8; --ns-grade-a-text: #FFFFFF;
+  --ns-grade-b: #2E8B6E; --ns-grade-b-text: #FFFFFF; /* large text only */
+  --ns-grade-c: #E8A33D; --ns-grade-c-text: #111111;
+  --ns-grade-d: #2B2B2B; --ns-grade-d-text: #FFFFFF;
+  --ns-status-rejected: #C8401E;
+  --ns-rebate: #B8651B;
+  --ns-logo-yellow: #FFCC00; /* primary logo and app icon only; construction yellow */ /* large text only on this colour; never next to grade-c */
+
+  --ns-font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ns-weight-display-xl: 700;
+  --ns-weight-display: 700;
+  --ns-weight-title: 700;
+  --ns-weight-label: 600;
+  --ns-weight-body: 400;
+  --ns-tracking-label: 0.04em;
+  --ns-tracking-wordmark: 0.06em;
+
+  --ns-space-1: 4mm; --ns-space-2: 8mm; --ns-space-3: 12mm; --ns-space-4: 16mm;
+  --ns-band-label: 12mm; --ns-band-a4: 16mm; --ns-band-sign: 80mm;
+  --ns-stroke-table: 0.5pt; --ns-stroke-section: 2pt;
+  --ns-chamfer: 15%; /* of the short side, 45deg */
+}
+body { font-family: var(--ns-font); font-feature-settings: "tnum"; }
+.ns-label { font-weight: 600; text-transform: uppercase; letter-spacing: var(--ns-tracking-label); }
+/* Chamfered grade badges: cuts go TR, then BR, then BL */
+.ns-grade-a { background: var(--ns-grade-a); color: var(--ns-grade-a-text); clip-path: none; }
+.ns-grade-b { background: var(--ns-grade-b); color: var(--ns-grade-b-text); clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 100%, 0 100%); }
+.ns-grade-c { background: var(--ns-grade-c); color: var(--ns-grade-c-text); clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 85%, 85% 100%, 0 100%); }
+.ns-grade-d { background: var(--ns-grade-d); color: var(--ns-grade-d-text); clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0 85%); }
+
+/* App additions (screen units). Print tokens above stay in mm. */
+:root {
+  --app-space-1: 4px; --app-space-2: 8px; --app-space-3: 16px; --app-space-4: 24px; --app-space-5: 32px; --app-space-6: 48px;
+  --app-gutter: 16px;
+  --app-band: 16px;
+  --app-tap: 56px;
+  --app-size-display: 56px;
+  --app-size-title: 28px;
+  --app-size-head: 20px;
+  --app-size-body: 16px;
+  --app-size-label: 13px;
+  --app-size-fine: 12px;
+  /* stone is 3.58:1 on white, fails AA for small text; use this for small secondary text */
+  --app-stone-text: #6B6862;
+}
