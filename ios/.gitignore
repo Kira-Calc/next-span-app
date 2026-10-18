@@ -1,0 +1,4 @@
+build/
+.sim-udid
+*.xcodeproj/xcuserdata/
+.DS_Store

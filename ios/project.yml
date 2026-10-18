@@ -1,0 +1,26 @@
+name: NextSpan
+options:
+  bundleIdPrefix: app.nextspan
+  deploymentTarget:
+    iOS: "26.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGNING_ALLOWED: "NO"
+targets:
+  NextSpan:
+    type: application
+    platform: iOS
+    sources: [NextSpan]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.nextspan.prototype
+        INFOPLIST_KEY_CFBundleDisplayName: Next Span
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        GENERATE_INFOPLIST_FILE: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1"
