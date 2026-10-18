@@ -12,6 +12,10 @@ struct AcceptView: View {
         }
         .navigationTitle(state.accepted ? "Accepted" : "Delivery for \(DemoData.batchID)")
         .navigationSubtitle("Specifier")
+        .onAppear {
+            // Screenshot runs only: open the rejection notice straight away.
+            if ProcessInfo.processInfo.environment["NS_STATE"] == "reject" { sheet = .reject }
+        }
         .fullScreenCover(item: $sheet) { kind in
             switch kind {
             case .scan:

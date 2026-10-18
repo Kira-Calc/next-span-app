@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { go } from '../router.js';
-import { Screen, Button, StatusTag, SectionHead } from '../components/ui.jsx';
+import { Screen, Section, Row, Button, Stepper } from '../components/ui.jsx';
 import GradeBadge from '../components/GradeBadge.jsx';
 import ImageSheet from '../components/ImageSheet.jsx';
 import { BATCH, MONEY, GRADE_NAMES } from '../demo-data.js';
@@ -10,77 +10,64 @@ const GRADES = ['A', 'B', 'C', 'D'];
 function Before({ delivered, setDelivered, onAccept, onScan, onReject }) {
   const bump = (g, d) => setDelivered({ ...delivered, [g]: Math.max(0, Math.min(99, delivered[g] + d)) });
   return (
-    <div className="stack-lg">
-      <h1 className="page-title">Delivery for {BATCH.id}</h1>
-
-      <section aria-labelledby="count-h">
-        <SectionHead num="01" id="count-h">Count what arrived</SectionHead>
-        <ul className="count-list">
-          {GRADES.map((g) => (
-            <li key={g} className="count-row">
-              <GradeBadge grade={g} size={56} />
-              <div className="count-text">
-                <span>Listed <strong>{BATCH.grades[g]}</strong></span>
-                <span>Delivered <strong className="count-num">{delivered[g]}</strong></span>
-              </div>
-              <div className="stepper">
-                <button className="stepper-btn" aria-label={`Fewer grade ${g} delivered`} onClick={() => bump(g, -1)}>−</button>
-                <button className="stepper-btn" aria-label={`More grade ${g} delivered`} onClick={() => bump(g, 1)}>+</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div className="scan-btn">
-          <Button variant="secondary" onClick={onScan}>
-            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style={{ marginRight: 10 }}><path d="M3 3h7v2H5v5H3zm11 0h7v7h-2V5h-5zM3 14h2v5h5v2H3zm16 0h2v7h-7v-2h5zM7 7h4v4H7zm6 0h4v4h-4zm-6 6h4v4H7zm6 0h4v4h-4z" fill="currentColor" /></svg>
+    <>
+      <Section num="01" title="Count what arrived">
+        {GRADES.map((g) => (
+          <Row key={g} className="row-flex count-row" aria-label={`Grade ${g}, listed ${BATCH.grades[g]}, delivered ${delivered[g]}`}>
+            <GradeBadge grade={g} size={44} />
+            <div className="count-text">
+              <span className="footnote secondary">Listed {BATCH.grades[g]}</span>
+              <span className="headline">Delivered {delivered[g]}</span>
+            </div>
+            <Stepper label={`grade ${g} delivered`} onDec={() => bump(g, -1)} onInc={() => bump(g, 1)} />
+          </Row>
+        ))}
+        <Row>
+          <button className="link-btn" style={{ color: 'var(--ns-grade-a)' }} onClick={onScan}>
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8V4.5A1.5 1.5 0 0 1 4.5 3H8m8 0h3.5A1.5 1.5 0 0 1 21 4.5V8m0 8v3.5a1.5 1.5 0 0 1-1.5 1.5H16m-8 0H4.5A1.5 1.5 0 0 1 3 19.5V16M7.5 7.5h3v3h-3zm6 0h3v3h-3zm-6 6h3v3h-3zm6 0h3v3h-3z" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
             Scan a label
-          </Button>
-        </div>
-      </section>
+          </button>
+        </Row>
+      </Section>
 
-      <div>
-        <Button variant="specifier" onClick={onAccept}>Accept batch</Button>
-        <Button variant="danger" onClick={onReject}>Report a grade mismatch</Button>
+      <div className="actions">
+        <Button onClick={onAccept}>Accept batch</Button>
+        <Button variant="glass" className="btn-danger" onClick={onReject}>Report a grade mismatch</Button>
       </div>
-      <p className="fine">Generic framework. Not an official Brisbane City Council document.</p>
-    </div>
+      <p className="section-foot legal">Generic framework. Not an official Brisbane City Council document.</p>
+    </>
   );
 }
 
-// Both sides of the deal in one view: acceptance on top, payment below.
+// Both sides on one screen: the buyer's acceptance on top, the developer's payment below.
 function After() {
   return (
     <div className="meet">
-      <section className="meet-you" aria-labelledby="you-h">
-        <h2 className="meet-who" id="you-h">You</h2>
+      <section className="meet-card meet-you" aria-label="You">
+        <p className="caps">You</p>
         <p className="meet-big">Batch accepted</p>
-        <p className="meet-sub">
-          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" fill="currentColor" /></svg>
-          Carbon certificate issued
-        </p>
+        <p className="meet-sub"><span aria-hidden="true">✓</span> Carbon certificate issued</p>
       </section>
 
-      <div className="meet-line" aria-hidden="false">
-        <span>Payment and use meet here.</span>
-      </div>
+      <div className="meet-line"><span>Payment and use meet here.</span></div>
 
-      <section className="meet-dev" aria-labelledby="dev-h">
-        <div className="meet-dev-head">
-          <h2 className="meet-who" id="dev-h">Developer</h2>
-          <span className="tag-swap">
-            <span className="tag-old"><StatusTag kind="locked">Locked</StatusTag></span>
-            <span className="tag-new"><StatusTag kind="released">Released</StatusTag></span>
-          </span>
-        </div>
-        <div className="meet-fill">
-          <div className="meet-fill-bar" aria-hidden="true" />
-          <div className="meet-fill-content">
-            <span className="meet-money">{MONEY}</span>
-            <span className="meet-chip">illustrative</span>
-            <p className="meet-paid">Paid to developer</p>
+      <section className="meet-card meet-dev" aria-label="Developer">
+        <div className="meet-fill" aria-hidden="true" />
+        <div className="meet-dev-content">
+          <div className="row-flex">
+            <p className="caps">Developer</p>
+            <span className="tag-swap" aria-label="Status: released">
+              <span className="white-tag tag-old">LOCKED</span>
+              <span className="white-tag tag-new">RELEASED</span>
+            </span>
           </div>
+          <p className="meet-money"><span className="display">{MONEY}</span><span className="white-chip">illustrative</span></p>
+          <p className="meet-sub"><span aria-hidden="true">↓</span> Paid to developer</p>
         </div>
       </section>
+
+      <p className="footnote secondary meet-note">The council receives the acceptance record that closes the claim.</p>
+      <p className="footnote secondary">Generic framework. Not an official Brisbane City Council document.</p>
     </div>
   );
 }
@@ -90,14 +77,14 @@ export default function Accept({ accept, setAccept }) {
   const { accepted, delivered } = accept;
 
   return (
-    <Screen side="specifier" back="/batch/NS-0412" title="Accept on delivery">
+    <Screen side="specifier" back="/batch/NS-0412" title={accepted ? 'Accepted' : `Delivery for ${BATCH.id}`} subtitle="Specifier">
       {accepted ? (
-        <div className="stack">
+        <>
           <After />
-          <p className="fine">The council receives the acceptance record that closes the claim.</p>
-          <p className="fine">Generic framework. Not an official Brisbane City Council document.</p>
-          <Button variant="primary" onClick={() => go('/certificates')}>View certificates</Button>
-        </div>
+          <div className="actions" style={{ '--tint': 'var(--ns-ink)' }}>
+            <Button onClick={() => go('/certificates')}>View certificates</Button>
+          </div>
+        </>
       ) : (
         <Before
           delivered={delivered}
@@ -109,24 +96,14 @@ export default function Accept({ accept, setAccept }) {
       )}
 
       {sheet === 'scan' && (
-        <ImageSheet
-          band="specifier"
-          src="./artwork/labels/label-B-07.png"
+        <ImageSheet band="var(--ns-grade-a)" src="./artwork/labels/label-B-07.png"
           alt={`Grade B label, ${BATCH.id}, member 07 of 24, ${GRADE_NAMES.B}`}
-          title="Scanned: member 07 of 24"
-          onClose={() => setSheet(null)}
-          footer={<Button variant="primary" onClick={() => setSheet(null)}>Done</Button>}
-        />
+          title="Scanned: member 07 of 24" onClose={() => setSheet(null)} />
       )}
       {sheet === 'reject' && (
-        <ImageSheet
-          band="rejected"
-          src="./artwork/rejection-notice/rejection-notice.png"
+        <ImageSheet band="var(--ns-status-rejected)" src="./artwork/rejection-notice/rejection-notice.png"
           alt="Rebate not released. Reason code R-02: buyer reported a grade mismatch on delivery. Batch NS-0412, 24 members. The rebate is still locked. It has not been cancelled."
-          title="Grade mismatch reported"
-          onClose={() => setSheet(null)}
-          footer={<Button variant="primary" onClick={() => setSheet(null)}>Back to delivery</Button>}
-        />
+          title="Grade mismatch reported" footerLabel="Back to delivery" onClose={() => setSheet(null)} />
       )}
     </Screen>
   );

@@ -125,7 +125,7 @@ struct ImageViewer: View {
             }
             .safeAreaInset(edge: .top, spacing: 0) { Rectangle().fill(band).frame(height: 6) }
             .safeAreaInset(edge: .bottom) {
-                Button(footerTitle) { dismiss() }
+                Button { dismiss() } label: { Text(footerTitle).frame(maxWidth: .infinity) }
                     .buttonStyle(.glassProminent)
                     .controlSize(.large)
                     .frame(maxWidth: .infinity)

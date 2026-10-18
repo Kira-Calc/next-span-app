@@ -52,12 +52,15 @@ struct BatchView: View {
 
             Section {
                 ForEach(DemoData.unknown) { u in
-                    LabeledContent(u.what) {
-                        Label("Ask: \(u.ask)", systemImage: "questionmark.bubble")
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text(u.what)
+                        Spacer(minLength: 8)
+                        Text("Ask: \(u.ask)")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(Color.nsGradeA)
                             .multilineTextAlignment(.trailing)
                     }
+                    .accessibilityElement(children: .combine)
                 }
             } header: {
                 NumberedHeader(number: "02", title: "What we don't")

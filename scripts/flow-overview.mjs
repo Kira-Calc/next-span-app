@@ -1,4 +1,4 @@
-// Report extras: top-of-page shot of screen 4, and app_flow_overview.png.
+// app_flow_overview.png from the report screenshots in <dir>.
 // Flow: developer row 1 → 2 → 3 → 4, specifier row 5 → 6 → 7 → 8, demo link 4 → 6.
 // Screen 7 is enlarged with a rebate-colour frame. No text besides the screens.
 import puppeteer from 'puppeteer-core';
@@ -10,10 +10,6 @@ const abs = (f) => 'data:image/png;base64,' + readFileSync(resolve(dir, f)).toSt
 const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true, args: ['--allow-file-access-from-files'] });
 const page = await browser.newPage();
 
-await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-await page.goto(base + '#/listing', { waitUntil: 'networkidle0' });
-await page.reload({ waitUntil: 'networkidle0' });
-await page.screenshot({ path: `${dir}/app_04_listing.png` });
 
 const W = 234, H = 507;           // thumbnail, 0.6 of 390 × 844
 const BW = 312, BH = 676;         // screen 7, 0.8

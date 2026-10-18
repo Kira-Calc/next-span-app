@@ -1,12 +1,10 @@
-import { Sheet } from './ui.jsx';
+import { Sheet, Button } from './ui.jsx';
 
-// Full-screen preview of a printed original. Scrolls when taller than the screen.
-export default function ImageSheet({ src, alt, title, band = 'developer', onClose, footer }) {
+// Printed original in a full-screen sheet. Scrolls when taller than the screen.
+export default function ImageSheet({ src, alt, title, band, onClose, footerLabel = 'Done' }) {
   return (
-    <Sheet band={band} title={title} onClose={onClose} footer={footer}>
-      <div className="image-sheet">
-        <img src={src} alt={alt} />
-      </div>
+    <Sheet band={band} title={title} onClose={onClose} footer={<Button onClick={onClose}>{footerLabel}</Button>}>
+      <img src={src} alt={alt} />
     </Sheet>
   );
 }

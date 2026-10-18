@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Screen, Sheet } from '../components/ui.jsx';
+import { Screen, Sheet, Segmented } from '../components/ui.jsx';
 import GradeBadge from '../components/GradeBadge.jsx';
 import { BATCH, CARBON } from '../demo-data.js';
 
@@ -62,10 +62,7 @@ function Scaled({ children }) {
   );
 }
 
-const CARDS = [
-  { key: 'rebate', name: 'Rebate certificate' },
-  { key: 'carbon', name: 'Carbon certificate' },
-];
+const NAMES = ['Rebate', 'Carbon'];
 
 export default function Certificates() {
   const [active, setActive] = useState(0);
@@ -83,48 +80,43 @@ export default function Certificates() {
   };
 
   return (
-    <Screen side="developer" back="/accept" title="Certificates">
-      <div className="stack-lg">
-        <h1 className="page-title">Two certificates, one acceptance</h1>
-
-        <div className="cert-tabs" role="tablist" aria-label="Certificates">
-          {CARDS.map((c, i) => (
-            <button key={c.key} role="tab" aria-selected={active === i} onClick={() => show(i)}>{c.name}</button>
-          ))}
-        </div>
-
-        <div className="cert-track" ref={track} onScroll={onScroll}>
-          <div className="cert-slide">
-            <button className="cert-thumb" onClick={() => setZoom('rebate')} aria-label="Enlarge rebate certificate">
-              <img src="./artwork/certificate/rebate-certificate.png" alt={`Rebate certificate for ${BATCH.id}, $ XXX illustrative`} />
-            </button>
-            <p className="cert-caption"><strong>Rebate certificate</strong> Paid to the developer when the buyer accepts.</p>
-          </div>
-          <div className="cert-slide">
-            <button className="cert-thumb" onClick={() => setZoom('carbon')} aria-label="Enlarge carbon certificate">
-              <Scaled><CarbonCertificate /></Scaled>
-            </button>
-            <p className="cert-caption"><strong>Carbon certificate</strong> Embodied carbon kept in use <strong>{CARBON}</strong> <span className="fine">illustrative</span></p>
-          </div>
-        </div>
-
-        <div className="cert-nav">
-          <button className="stepper-btn" aria-label="Previous certificate" disabled={active === 0} onClick={() => show(0)}>←</button>
-          <span className="cert-count">{active + 1} / 2</span>
-          <button className="stepper-btn" aria-label="Next certificate" disabled={active === 1} onClick={() => show(1)}>→</button>
-        </div>
-
-        <p className="fine">Generic framework. Not an official government certificate.</p>
+    <Screen side="developer" back="/accept" title="Certificates" subtitle="Developer and buyer">
+      <div className="cert-seg">
+        <Segmented label="Certificate" options={NAMES} value={NAMES[active]} onChange={(v) => show(NAMES.indexOf(v))} />
       </div>
 
+      <div className="cert-track" ref={track} onScroll={onScroll}>
+        <div className="cert-slide">
+          <button className="cert-thumb" onClick={() => setZoom('rebate')} aria-label="Enlarge rebate certificate">
+            <img src="./artwork/certificate/rebate-certificate.png" alt={`Rebate certificate for ${BATCH.id}, $ XXX illustrative`} />
+            <span className="glass-chip round">⤢</span>
+          </button>
+          <p className="headline cert-name">Rebate certificate</p>
+          <p className="secondary">Paid to the developer when the buyer accepts.</p>
+        </div>
+        <div className="cert-slide">
+          <button className="cert-thumb" onClick={() => setZoom('carbon')} aria-label="Enlarge carbon certificate">
+            <Scaled><CarbonCertificate /></Scaled>
+            <span className="glass-chip round">⤢</span>
+          </button>
+          <p className="headline cert-name">Carbon certificate</p>
+          <p className="secondary">Embodied carbon kept in use {CARBON}, illustrative.</p>
+        </div>
+      </div>
+      <div className="page-dots" aria-hidden="true">
+        {NAMES.map((n, i) => <span key={n} className={i === active ? 'on' : ''} />)}
+      </div>
+
+      <p className="section-foot legal">Generic framework. Not an official government certificate.</p>
+
       {zoom && (
-        <Sheet band="developer" title={zoom === 'rebate' ? 'Rebate certificate' : 'Carbon certificate'} onClose={() => setZoom(null)}>
+        <Sheet band={zoom === 'rebate' ? 'var(--ns-rebate)' : 'var(--ns-ink)'} title={zoom === 'rebate' ? 'Rebate certificate' : 'Carbon certificate'} onClose={() => setZoom(null)}>
           <div className="cert-zoom">
             {zoom === 'rebate'
               ? <img src="./artwork/certificate/rebate-certificate.png" alt={`Rebate certificate for ${BATCH.id}`} />
               : <div className="cert-zoom-carbon"><CarbonCertificate /></div>}
           </div>
-          <p className="fine cert-zoom-hint">Scroll sideways to read the whole certificate.</p>
+          <p className="footnote secondary">Scroll sideways to read the whole certificate.</p>
         </Sheet>
       )}
     </Screen>

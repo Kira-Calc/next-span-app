@@ -28,6 +28,7 @@ const SHOTS = [
   ['ios_06_batch_scan07', { NS_SCREEN: 'batch', NS_MEMBER: '07' }],
   ['ios_07_accept', { NS_SCREEN: 'accept' }],
   ['ios_07_accept_after', { NS_SCREEN: 'accept', NS_STATE: 'accepted' }],
+  ['ios_07_accept_rejection', { NS_SCREEN: 'accept', NS_STATE: 'reject' }],
   ['ios_08_certificates', { NS_SCREEN: 'certificates' }],
 ];
 

@@ -1,80 +1,134 @@
 import { useState } from 'react';
 import { go } from '../router.js';
-import { SCREENS, MONEY } from '../demo-data.js';
+import { MONEY } from '../demo-data.js';
 
-const BAND = { developer: 'var(--ns-ink)', specifier: 'var(--ns-grade-a)', rebate: 'var(--ns-rebate)', rejected: 'var(--ns-status-rejected)' };
+const TINT = { developer: 'var(--ns-ink)', specifier: 'var(--ns-grade-a)' };
 
-export function TopBand({ side }) {
-  return <div className="top-band" style={{ background: BAND[side] || BAND.developer }} aria-hidden="true" />;
-}
+const Icon = {
+  back: <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4.5 8 12l7.5 7.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  grid: <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="4" width="6.5" height="6.5" rx="1.6" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6" /><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.6" /></g></svg>,
+  close: <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" /></svg>,
+};
+export { Icon };
 
-// Left: back arrow to the previous screen in the journey. Right: jump menu for demos.
-export function AppHeader({ back, title, side = 'developer' }) {
+const SCREEN_MENU = [
+  ['Developer', [['/estimate', '1  Rebate estimate'], ['/checklist', '2  Checklist'], ['/grade', '3  Grade on site'], ['/listing', '4  Batch and listing']]],
+  ['Specifier', [['/search', '5  Stock search'], ['/batch/NS-0412', '6  Batch page'], ['/accept', '7  Accept on delivery'], ['/certificates', '8  Certificates']]],
+];
+
+function ScreenMenu() {
   const [open, setOpen] = useState(false);
+  const pick = (p) => { setOpen(false); go(p); };
   return (
     <>
-      <header className="app-header" style={{ background: BAND[side] || BAND.developer }}>
-        {back ? (
-          <button className="icon-btn" aria-label="Back" onClick={() => go(back)}>
-            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z" fill="currentColor" /></svg>
-          </button>
-        ) : <span className="icon-btn-spacer" />}
-        <span className="app-header-title">{title}</span>
-        <button className="icon-btn" aria-label="Open screen menu" aria-expanded={open} onClick={() => setOpen(true)}>
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v2.5H3zM3 10.75h18v2.5H3zM3 16.5h18V19H3z" fill="currentColor" /></svg>
-        </button>
-      </header>
+      <button className="glass-circle" aria-label="Go to screen" aria-expanded={open} onClick={() => setOpen(!open)}>{Icon.grid}</button>
       {open && (
-        <Sheet band="developer" title="Go to screen" onClose={() => setOpen(false)} closeLabel="Close menu">
-          <nav className="menu-list">
-            {SCREENS.map((s) => (
-              <button key={s.path} className="menu-item" onClick={() => { setOpen(false); go(s.path); }}>
-                {s.label}
-              </button>
+        <>
+          <div className="menu-scrim" onClick={() => setOpen(false)} />
+          <div className="menu-sheet" role="menu">
+            <button className="menu-item" role="menuitem" onClick={() => pick('/')}>Start</button>
+            {SCREEN_MENU.map(([group, items]) => (
+              <div key={group}>
+                <div className="menu-sep" />
+                <div className="menu-head">{group}</div>
+                {items.map(([p, label]) => (
+                  <button key={p} className="menu-item" role="menuitem" onClick={() => pick(p)}>{label}</button>
+                ))}
+              </div>
             ))}
-          </nav>
-        </Sheet>
+          </div>
+        </>
       )}
     </>
   );
 }
 
-// Full-screen overlay, square corners, coloured band on top.
-export function Sheet({ band = 'developer', title, onClose, closeLabel = 'Close', footer, children }) {
+// iOS-style screen: glass back button, centred title with role subtitle, screen menu.
+export function Screen({ side = 'developer', back, title, subtitle, extra, plain, children, after }) {
   return (
-    <div className="sheet" role="dialog" aria-modal="true" aria-label={title}>
-      <TopBand side={band} />
-      <div className="sheet-head">
-        <span className="sheet-title">{title}</span>
-        <button className="icon-btn" aria-label={closeLabel} onClick={onClose}>
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z" fill="currentColor" /></svg>
-        </button>
-      </div>
-      <div className="sheet-body">{children}</div>
-      {footer && <div className="sheet-foot">{footer}</div>}
+    <div className={`screen ${plain ? 'is-plain' : ''} ${extra ? 'wide-right' : ''}`} style={{ '--tint': TINT[side] }}>
+      <header className="nav">
+        {back ? <button className="glass-circle" aria-label="Back" onClick={() => go(back)}>{Icon.back}</button> : <span />}
+        <h1 className="nav-title"><strong>{title}</strong>{subtitle && <span>{subtitle}</span>}</h1>
+        <div className="nav-right">
+          {extra ? <div className="glass-group">{extra}<ScreenMenu /></div> : <ScreenMenu />}
+        </div>
+      </header>
+      <main className="content">{children}</main>
+      {after}
+      <PrototypeNotice />
     </div>
   );
 }
 
-export function Button({ variant = 'primary', children, ...rest }) {
-  return <button className={`btn btn-${variant}`} {...rest}>{children}</button>;
+export function PrototypeNotice() {
+  return <footer className="notice">Prototype. All amounts and data are illustrative.</footer>;
 }
 
-export function Card({ strong, children, className = '', ...rest }) {
-  return <div className={`card ${strong ? 'card-strong' : ''} ${className}`} {...rest}>{children}</div>;
+// Inset grouped section with the numbered header from the printed checklist.
+export function Section({ num, title, footer, footerStrong, card = true, id, children }) {
+  const hid = `${id || num || 'section'}-h`;
+  return (
+    <section className="section" id={id} aria-labelledby={title ? hid : undefined}>
+      {title && (
+        <div className="section-head">
+          {num && <span className="section-num" aria-hidden="true">{num}</span>}
+          <h2 className="section-title" id={hid}>{title}</h2>
+        </div>
+      )}
+      {card ? <div className="group">{children}</div> : children}
+      {footer && <p className={`section-foot ${footerStrong ? 'strong' : ''}`}>{footer}</p>}
+    </section>
+  );
 }
 
-// Square tag, uppercase. Ink text on white keeps AA at small size; the
-// coloured square carries the status colour.
+export function Row({ children, className = '', ...rest }) {
+  return <div className={`row ${className}`} {...rest}>{children}</div>;
+}
+
+export function LabeledRow({ label, children, sub }) {
+  return (
+    <div className="row">
+      <div className="row-flex">
+        <span className="row-label">{label}</span>
+        <span className="row-value">{children}</span>
+      </div>
+      {sub && <p className="row-sub">{sub}</p>}
+    </div>
+  );
+}
+
+export function Segmented({ label, options, value, onChange, allowAll }) {
+  const items = allowAll ? [[null, 'All'], ...options.map((o) => [o, o])] : options.map((o) => [o, o]);
+  return (
+    <div role="group" aria-label={label}>
+      {label && <span className="sub-label">{label}</span>}
+      <div className="seg">
+        {items.map(([v, text]) => (
+          <button key={text} type="button" aria-pressed={value === v} onClick={() => onChange(v)}>{text}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function Stepper({ label, onDec, onInc, disabled }) {
+  return (
+    <div className="stepper" role="group" aria-label={label}>
+      <button aria-label={`Decrease ${label}`} disabled={disabled} onClick={onDec}>−</button>
+      <i aria-hidden="true" />
+      <button aria-label={`Increase ${label}`} disabled={disabled} onClick={onInc}>+</button>
+    </div>
+  );
+}
+
+export function Button({ variant = 'prominent', className = '', children, ...rest }) {
+  return <button className={`btn btn-${variant} ${className}`} {...rest}>{children}</button>;
+}
+
 const TAG_COLOR = {
-  neutral: 'var(--ns-ink)',
-  calculated: 'var(--ns-ink)',
-  locked: 'var(--ns-rebate)',
-  released: 'var(--ns-rebate)',
-  pending: 'var(--ns-rebate)',
-  ready: 'var(--ns-grade-b)',
-  quote: 'var(--ns-stone)',
-  rejected: 'var(--ns-status-rejected)',
+  neutral: 'var(--ns-ink)', rebate: 'var(--ns-rebate)', ready: 'var(--ns-grade-b)',
+  quote: 'var(--ns-stone)', rejected: 'var(--ns-status-rejected)',
 };
 export function StatusTag({ kind = 'neutral', children }) {
   return (
@@ -85,22 +139,26 @@ export function StatusTag({ kind = 'neutral', children }) {
   );
 }
 
-export function Money({ size = 'title', value = MONEY }) {
+export function Money({ size = 22, value = MONEY, stacked }) {
   return (
-    <span className={`money money-${size}`}>
-      <span className="money-value">{value}</span>
-      <span className="fine">illustrative</span>
+    <span className={`money ${stacked ? 'stacked' : ''}`}>
+      <span className="money-value" style={{ fontSize: size }}>{value}</span>
+      <small>illustrative</small>
     </span>
   );
 }
 
-export function Label({ children, as: Tag = 'div', ...rest }) {
-  return <Tag className="ns-label label" {...rest}>{children}</Tag>;
+export function RebateBar({ share, height = 10, color = 'var(--ns-rebate)' }) {
+  return (
+    <div className="bar-track" style={{ height }} aria-hidden="true">
+      <div className="bar" style={{ width: `${share * 100}%`, background: color }} />
+    </div>
+  );
 }
 
 export function StepBar({ steps, current = 0 }) {
   return (
-    <ol className="stepbar" style={{ gridTemplateColumns: `repeat(${steps.length}, 1fr)` }}>
+    <ol className="stepbar" style={{ gridTemplateColumns: `repeat(${steps.length}, 1fr)` }} aria-label={`Step ${current + 1} of ${steps.length}: ${steps[current]}`}>
       {steps.map((s, i) => (
         <li key={s} className={i < current ? 'done' : i === current ? 'current' : ''} aria-current={i === current ? 'step' : undefined}>
           <span className="stepbar-num">{String(i + 1).padStart(2, '0')}</span>
@@ -111,27 +169,29 @@ export function StepBar({ steps, current = 0 }) {
   );
 }
 
-export function SectionHead({ num, children, id }) {
+// Full-screen sheet with a coloured band, like a fullScreenCover on iOS.
+export function Sheet({ band = 'var(--ns-ink)', title, onClose, footer, children }) {
   return (
-    <div className="section-head" id={id}>
-      <span className="section-num" aria-hidden="true">{num}</span>
-      <span className="section-title">{children}</span>
+    <div className="sheet" role="dialog" aria-modal="true" aria-label={title}>
+      <div className="sheet-band" style={{ background: band }} />
+      <div className="sheet-nav">
+        <span />
+        <h2 className="nav-title"><strong>{title}</strong></h2>
+        <button className="glass-circle" aria-label="Close" onClick={onClose}>{Icon.close}</button>
+      </div>
+      <div className="sheet-body">{children}</div>
+      {footer && <div className="sheet-foot">{footer}</div>}
     </div>
   );
 }
 
-export function PrototypeFooter() {
-  return <footer className="proto-footer fine">Prototype. All amounts and data are illustrative.</footer>;
-}
-
-// One screen = band + header + scrollable body + fixed prototype line.
-export function Screen({ side = 'developer', back, title, children }) {
+export function Alert({ text, onClose }) {
   return (
-    <div className="screen">
-      <TopBand side={side} />
-      <AppHeader back={back} title={title} side={side} />
-      <main className="screen-body">{children}</main>
-      <PrototypeFooter />
+    <div className="alert-scrim" role="alertdialog" aria-modal="true" aria-label={text}>
+      <div className="alert">
+        <p>{text}</p>
+        <button onClick={onClose}>OK</button>
+      </div>
     </div>
   );
 }

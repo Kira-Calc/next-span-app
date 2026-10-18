@@ -1,22 +1,9 @@
 import { go } from '../router.js';
-import { Screen, SectionHead } from '../components/ui.jsx';
+import { Screen, Section, Row, Segmented, Button } from '../components/ui.jsx';
 import GradeBadge from '../components/GradeBadge.jsx';
 import { BATCH, SEARCH_OPTIONS, LENGTH_MIN, GRADE_NAMES } from '../demo-data.js';
 
 const GRADES = ['A', 'B', 'C', 'D'];
-
-function Seg({ label, options, value, onChange }) {
-  return (
-    <fieldset className="fieldset">
-      <legend className="sub-label">{label}</legend>
-      <div className="seg">
-        {options.map((o) => (
-          <button key={o} type="button" aria-pressed={value === o} onClick={() => onChange(value === o ? null : o)}>{o}</button>
-        ))}
-      </div>
-    </fieldset>
-  );
-}
 
 export default function Search({ search, setSearch }) {
   const { length, section, grades, shortlisted } = search;
@@ -30,75 +17,64 @@ export default function Search({ search, setSearch }) {
   const match = lengthOk && sectionOk;
 
   return (
-    <Screen side="specifier" back="/" title="Stock search">
+    <Screen side="specifier" back="/" title="Stock search" subtitle="Specifier">
       {shortlisted && (
         <div className="shortlist-bar reveal" role="status">
-          <span>Project shortlist (1)</span>
-          <span className="shortlist-id">{BATCH.id}</span>
+          <span>☆ Project shortlist (1)</span>
+          <span className="secondary">{BATCH.id}</span>
         </div>
       )}
-      <div className="stack-lg">
-        <section className="stack-md" aria-labelledby="filter-h">
-          <SectionHead num="01" id="filter-h">What you need</SectionHead>
-          <Seg label="Length (mm)" options={SEARCH_OPTIONS.length} value={length} onChange={(v) => set({ length: v })} />
-          <Seg label="Section (mm)" options={SEARCH_OPTIONS.section} value={section} onChange={(v) => set({ section: v })} />
-          <fieldset className="fieldset">
-            <legend className="sub-label">Grade</legend>
-            <div className="grade-toggles">
-              {GRADES.map((g) => (
-                <button
-                  key={g}
-                  className="grade-toggle"
-                  aria-pressed={grades.includes(g)}
-                  aria-label={`Grade ${g}, ${GRADE_NAMES[g]}`}
-                  onClick={() => toggleGrade(g)}
-                >
-                  <GradeBadge grade={g} size={48} decorative />
-                  <span className="grade-toggle-state" aria-hidden="true">{grades.includes(g) ? 'On' : 'Off'}</span>
-                </button>
-              ))}
-            </div>
-          </fieldset>
-        </section>
 
-        <section aria-labelledby="results-h">
-          <SectionHead num="02" id="results-h">{match ? '1 batch' : 'No batches'} match</SectionHead>
-          <div className="stack">
-            {match ? (
-              <article className="result-card">
-                <button className="result-main" onClick={() => go('/batch/NS-0412')} aria-label={`Open batch ${BATCH.id}`}>
-                  <span className="result-size">{BATCH.section} · {BATCH.length}</span>
-                  <span className="result-qty">{pieces} pieces</span>
-                  <span className="result-grades">
-                    {shown.map((g) => <GradeBadge key={g} grade={g} size={32} />)}
-                    <span className="result-id">{BATCH.id}</span>
-                  </span>
-                  <span className="result-updated">Updated {BATCH.updated}</span>
-                  <span className="result-source">{BATCH.source}</span>
+      <Section num="01" title="What you need">
+        <Row className="pad-lg"><Segmented label="Length (mm)" options={SEARCH_OPTIONS.length} value={length} allowAll onChange={(v) => set({ length: v })} /></Row>
+        <Row className="pad-lg"><Segmented label="Section (mm)" options={SEARCH_OPTIONS.section} value={section} allowAll onChange={(v) => set({ section: v })} /></Row>
+        <Row className="pad-lg">
+          <span className="sub-label">Grade</span>
+          <div className="grade-toggles">
+            {GRADES.map((g) => {
+              const on = grades.includes(g);
+              return (
+                <button key={g} className={`grade-toggle ${on ? 'on' : ''}`} aria-pressed={on} aria-label={`Grade ${g}, ${GRADE_NAMES[g]}`} onClick={() => toggleGrade(g)}>
+                  <GradeBadge grade={g} size={40} decorative />
+                  <span className={`radio ${on ? 'on blue' : ''}`} aria-hidden="true">{on ? '✓' : ''}</span>
                 </button>
-                <button
-                  className={`shortlist-btn ${shortlisted ? 'is-on' : ''}`}
-                  aria-pressed={shortlisted}
-                  onClick={() => set({ shortlisted: !shortlisted })}
-                >
-                  {shortlisted ? '✓ Shortlisted' : '+ Shortlist'}
-                </button>
-              </article>
-            ) : (
-              <p className="note-line">Nothing in stock at this size yet. Try a shorter length or Any section.</p>
-            )}
-
-            <article className="result-card is-sample" aria-label="Sample listing, not available">
-              <div className="result-main">
-                <span className="sample-tag">Sample</span>
-                <span className="result-size">140 × 45 · 3 000</span>
-                <span className="result-grades"><span className="result-id">NS-0398</span></span>
-                <span className="result-source">Sample listing. Not available in this prototype.</span>
-              </div>
-            </article>
+              );
+            })}
           </div>
-        </section>
-      </div>
+        </Row>
+      </Section>
+
+      <Section num="02" title={match ? '1 batch matches' : 'No batches match'}>
+        {match ? (
+          <Row className="pad-lg result-card">
+            <p className="display result-size">{BATCH.section} · {BATCH.length}</p>
+            <p className="result-qty">{pieces} pieces</p>
+            <div className="result-grades">
+              {shown.map((g) => <GradeBadge key={g} grade={g} size={28} />)}
+              <span className="headline">{BATCH.id}</span>
+            </div>
+            <p className="strong-text">Updated {BATCH.updated}</p>
+            <p className="footnote secondary">{BATCH.source}</p>
+            <div className="btn-row">
+              <Button variant="glass" aria-pressed={shortlisted} onClick={() => set({ shortlisted: !shortlisted })}>
+                {shortlisted ? '✓ Shortlisted' : '+ Shortlist'}
+              </Button>
+              <Button onClick={() => go('/batch/NS-0412')}>Open batch</Button>
+            </div>
+          </Row>
+        ) : (
+          <Row className="pad-lg empty">
+            <p className="headline">Nothing at this size yet</p>
+            <p className="footnote secondary">Try a shorter length or Any section.</p>
+          </Row>
+        )}
+        <Row className="pad-lg sample" aria-label="Sample listing NS-0398, not available">
+          <span className="sample-tag">Sample</span>
+          <p className="display sample-size">140 × 45 · 3 000</p>
+          <p className="headline">NS-0398</p>
+          <p className="footnote">Sample listing. Not available in this prototype.</p>
+        </Row>
+      </Section>
     </Screen>
   );
 }
