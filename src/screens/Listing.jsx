@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { go } from '../router.js';
-import { Screen, Section, Row, Button, Money, StatusTag, RebateBar, Stepper } from '../components/ui.jsx';
+import { Screen, Section, Row, Button, Money, StatusTag, RebateBar, Stepper, Alert } from '../components/ui.jsx';
 import GradeBadge from '../components/GradeBadge.jsx';
 import { BATCH, PRICE, DEMAND } from '../demo-data.js';
 
@@ -14,6 +15,7 @@ function priceNote(step) {
 export default function Listing({ listing, setListing }) {
   const { locked, priceStep } = listing;
   const set = (patch) => setListing({ ...listing, ...patch });
+  const [notAvailable, setNotAvailable] = useState(false);
 
   return (
     <Screen side="developer" back="/grade" title="Batch and listing" subtitle="Developer">
@@ -44,10 +46,25 @@ export default function Listing({ listing, setListing }) {
 
       <Section num="03" title="Rebate">
         <Row className="pad-lg rebate-row">
-          <StatusTag kind={locked ? 'rebate' : 'neutral'}>{locked ? 'Locked' : 'Calculated'}</StatusTag>
+          <div className="tag-pair">
+            <StatusTag kind={locked ? 'rebate' : 'neutral'}>{locked ? 'Locked' : 'Calculated'}</StatusTag>
+            {locked && <span className="tag tag-strong">Not paid yet</span>}
+          </div>
           <Money size={44} />
           <div className={`rebate-meter ${locked ? 'is-locked' : ''}`} aria-hidden="true"><div className="rebate-fill" /></div>
-          {locked && <p className="callout strong-text" role="status">Locked at listing. Released when a buyer accepts.</p>}
+          {locked && (
+            <>
+              <ol className="rules" role="status">
+                <li><span className="rule-num" aria-hidden="true">1</span>Released only after a buyer accepts the batch.</li>
+                <li><span className="rule-num" aria-hidden="true">2</span>No expiry while the batch stays listed.</li>
+                <li><span className="rule-num" aria-hidden="true">3</span>If it does not sell, relist it or move pieces down a grade.</li>
+              </ol>
+              <div className="btn-row rule-actions">
+                <Button variant="glass" onClick={() => setNotAvailable(true)}>Relist</Button>
+                <Button variant="glass" onClick={() => setNotAvailable(true)}>Move pieces down a grade</Button>
+              </div>
+            </>
+          )}
         </Row>
       </Section>
 
@@ -63,17 +80,12 @@ export default function Listing({ listing, setListing }) {
               <div><span className="display">{DEMAND.views}</span><span>Viewed {DEMAND.views} times</span></div>
             </div>
           </Section>
-          <Section>
-            <Row className="pad-lg row-flex lock-note">
-              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.7" /><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" strokeWidth="1.7" /></svg>
-              <span className="callout">If no buyer accepts, the rebate stays locked. You can relist or move pieces down a grade.</span>
-            </Row>
-          </Section>
           <div className="actions" style={{ '--tint': 'var(--ns-grade-a)' }}>
             <Button onClick={() => go('/batch/NS-0412')}>View as a buyer</Button>
           </div>
         </>
       )}
+      {notAvailable && <Alert text="Prototype: not available" onClose={() => setNotAvailable(false)} />}
     </Screen>
   );
 }

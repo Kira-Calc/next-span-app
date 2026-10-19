@@ -51,15 +51,20 @@ export default function Batch({ params }) {
         ))}
       </Section>
 
-      <Section num="03" title="Price breakdown" footer="Items marked to quote are not included." footerStrong>
+      <Section num="03" title="Price breakdown" id="price">
         <LabeledRow label="Timber"><Money size={17} /></LabeledRow>
         <LabeledRow label="De-nailing">Included</LabeledRow>
-        <LabeledRow label="Machining"><StatusTag kind="quote">To quote</StatusTag></LabeledRow>
-        <LabeledRow label="Delivery"><StatusTag kind="quote">To quote</StatusTag></LabeledRow>
         <LabeledRow label="Waste allowance">10% assumed</LabeledRow>
-        <Row className="row-flex">
-          <span className="headline">Known total</span>
-          <Money size={24} />
+        <Row className="pad-lg subtotal">
+          <div className="row-flex">
+            <span className="headline">Known subtotal</span>
+            <Money size={24} />
+          </div>
+          <div className="excluded">
+            <p className="excluded-note">Excludes machining and delivery. Final cost pending quotes.</p>
+            <div className="row-flex"><span className="row-label">Machining</span><StatusTag kind="quote">To quote</StatusTag></div>
+            <div className="row-flex"><span className="row-label">Delivery</span><StatusTag kind="quote">To quote</StatusTag></div>
+          </div>
         </Row>
       </Section>
 

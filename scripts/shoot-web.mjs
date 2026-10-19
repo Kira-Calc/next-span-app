@@ -40,6 +40,7 @@ await shot('/search', 'web_05_search');
 await shot('/search', 'web_05_search_shortlisted', async () => { await clickText('Shortlist'); await scrollTo('.result-card'); });
 await shot('/batch/NS-0412', 'web_06_batch');
 await shot('/batch/NS-0412?m=07', 'web_06_batch_scan07');
+await shot('/batch/NS-0412', 'web_06s_batch_price', async () => { await scrollTo('#price', 'start'); });
 await shot('/accept', 'web_07_accept');
 await shot('/accept', 'web_07_accept_after', async () => { await clickText('Accept batch'); });
 await shot('/accept', 'web_07_accept_rejection', async () => { await clickText('Report a grade mismatch'); });

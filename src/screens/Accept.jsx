@@ -31,6 +31,7 @@ function Before({ delivered, setDelivered, onAccept, onScan, onReject }) {
       </Section>
 
       <div className="actions">
+        <p className="accept-warning">Accepting this batch releases the developer's rebate.</p>
         <Button onClick={onAccept}>Accept batch</Button>
         <Button variant="glass" className="btn-danger" onClick={onReject}>Report a grade mismatch</Button>
       </div>

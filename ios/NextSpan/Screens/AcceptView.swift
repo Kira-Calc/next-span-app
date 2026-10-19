@@ -69,6 +69,18 @@ struct AcceptView: View {
                 .controlSize(.large)
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 0))
+            } header: {
+                // v2: say what Accept does before it is pressed. A header, so the list
+                // does not round its corners (square brand block).
+                Text("Accepting this batch releases the developer's rebate.")
+                    .font(.system(size: 19, weight: .bold))
+                    .foregroundStyle(.white)
+                    .textCase(nil)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(16)
+                    .background(Color.nsRebate)
+                    .padding(.horizontal, -16)
+                    .padding(.bottom, 10)
             } footer: {
                 Text("Generic framework. Not an official Brisbane City Council document.")
                     .padding(.top, 8)

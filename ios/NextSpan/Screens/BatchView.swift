@@ -70,18 +70,27 @@ struct BatchView: View {
             Section {
                 LabeledContent("Timber") { Money(font: .body.weight(.semibold)).foregroundStyle(Color.nsInk) }
                 LabeledContent("De-nailing", value: "Included")
-                LabeledContent("Machining") { StatusTag(text: "To quote", kind: .quote) }
-                LabeledContent("Delivery") { StatusTag(text: "To quote", kind: .quote) }
                 LabeledContent("Waste allowance", value: "10% assumed")
-                LabeledContent {
-                    Money(font: .title2.weight(.bold)).foregroundStyle(Color.nsInk)
-                } label: {
-                    Text("Known total").font(.headline)
+                VStack(alignment: .leading, spacing: 12) {
+                    LabeledContent {
+                        Money(font: .title2.weight(.bold)).foregroundStyle(Color.nsInk)
+                    } label: {
+                        Text("Known subtotal").font(.headline)
+                    }
+                    // v2: what the subtotal leaves out sits right under it, in one square frame.
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Excludes machining and delivery. Final cost pending quotes.")
+                            .font(.caption)
+                            .foregroundStyle(Color.nsInk)
+                        LabeledContent("Machining") { StatusTag(text: "To quote", kind: .quote) }
+                        LabeledContent("Delivery") { StatusTag(text: "To quote", kind: .quote) }
+                    }
+                    .padding(12)
+                    .overlay(Rectangle().strokeBorder(Color.nsInk, lineWidth: 1))
                 }
+                .padding(.vertical, 4)
             } header: {
                 NumberedHeader(number: "03", title: "Price breakdown")
-            } footer: {
-                Text("Items marked to quote are not included.").font(.footnote.weight(.semibold))
             }
             .id("price")
 

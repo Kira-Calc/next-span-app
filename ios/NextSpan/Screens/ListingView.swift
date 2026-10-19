@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ListingView: View {
     @Environment(AppState.self) private var state
+    @State private var notAvailable = false
 
     private var priceNote: String {
         let n = abs(state.priceStep)
@@ -56,7 +57,19 @@ struct ListingView: View {
 
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
-                        StatusTag(text: state.listed ? "Locked" : "Calculated", kind: state.listed ? .rebate : .neutral)
+                        HStack(spacing: 6) {
+                            StatusTag(text: state.listed ? "Locked" : "Calculated", kind: state.listed ? .rebate : .neutral)
+                            if state.listed {
+                                // v2: says plainly that LOCKED is not money in hand.
+                                Text("NOT PAID YET")
+                                    .font(.caption.weight(.bold)).tracking(0.6)
+                                    .foregroundStyle(Color.nsInk)
+                                    .padding(.horizontal, 8).padding(.vertical, 3)
+                                    .background(.white)
+                                    .overlay(Rectangle().strokeBorder(Color.nsInk, lineWidth: 2))
+                            }
+                        }
+                        .fixedSize(horizontal: false, vertical: true)
                         Money(font: .system(size: 44, weight: .bold))
                         ZStack(alignment: .leading) {
                             Rectangle().stroke(Color.nsRebate, lineWidth: 1)
@@ -66,8 +79,25 @@ struct ListingView: View {
                         .frame(height: 44)
                         .accessibilityHidden(true)
                         if state.listed {
-                            Text("Locked at listing. Released when a buyer accepts.")
-                                .font(.callout.weight(.semibold))
+                            VStack(alignment: .leading, spacing: 10) {
+                                RuleLine(n: 1, text: "Released only after a buyer accepts the batch.")
+                                RuleLine(n: 2, text: "No expiry while the batch stays listed.")
+                                RuleLine(n: 3, text: "If it does not sell, relist it or move pieces down a grade.")
+                            }
+                            .padding(.top, 4)
+                            HStack(spacing: 10) {
+                                Button { notAvailable = true } label: {
+                                    Text("Relist").frame(maxWidth: .infinity, minHeight: 40)
+                                }
+                                Button { notAvailable = true } label: {
+                                    Text("Move pieces down a grade")
+                                        .multilineTextAlignment(.center)
+                                        .frame(maxWidth: .infinity, minHeight: 40)
+                                }
+                            }
+                            .buttonStyle(.glass)
+                            .controlSize(.large)
+                            .padding(.top, 4)
                         }
                     }
                     .padding(.vertical, 6)
@@ -103,11 +133,6 @@ struct ListingView: View {
                     }
 
                     Section {
-                        Label("If no buyer accepts, the rebate stays locked. You can relist or move pieces down a grade.", systemImage: "lock")
-                            .font(.callout)
-                    }
-
-                    Section {
                         Button {
                             state.scannedMember = nil
                             state.path = [.search, .batch]
@@ -121,6 +146,9 @@ struct ListingView: View {
                         .listRowInsets(EdgeInsets())
                     }
                 }
+            }
+            .alert("Prototype: not available", isPresented: $notAvailable) {
+                Button("OK", role: .cancel) {}
             }
             .navigationTitle("Batch and listing")
             .navigationSubtitle("Developer")
@@ -146,6 +174,26 @@ private struct DemandTile: View {
         .padding(16)
         .frame(maxWidth: .infinity, minHeight: 120, alignment: .topLeading)
         .background(Color.nsInkFixed, in: .rect(cornerRadius: 20, style: .continuous))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// One numbered rule under the locked rebate. The number sits in a small square (brand element).
+private struct RuleLine: View {
+    let n: Int
+    let text: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Text("\(n)")
+                .font(.caption.weight(.bold).monospacedDigit())
+                .foregroundStyle(.white)
+                .frame(width: 20, height: 20)
+                .background(Color.nsInkFixed)
+                .alignmentGuide(.firstTextBaseline) { $0[VerticalAlignment.center] + 5 }
+            Text(text).font(.callout.weight(.semibold))
+                .fixedSize(horizontal: false, vertical: true)
+        }
         .accessibilityElement(children: .combine)
     }
 }
