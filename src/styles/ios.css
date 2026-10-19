@@ -179,8 +179,10 @@ ul, ol { list-style: none; }
 
 /* Step bar */
 .stepbar { display: grid; gap: 0; }
-.stepbar li { display: flex; flex-direction: column; gap: 6px; position: relative; padding-right: 4px; }
-.stepbar li::before { content: ""; position: absolute; top: 14px; left: 28px; right: 0; height: 1px; background: var(--ns-ink); }
+/* Each square sits centred in its column; the line runs from one centre to the next,
+   so the bar has equal space on both sides. */
+.stepbar li { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; text-align: center; padding: 0 2px; }
+.stepbar li::before { content: ""; position: absolute; top: 14px; left: calc(50% + 14px); right: calc(-50% + 14px); height: 1px; background: var(--ns-ink); }
 .stepbar li:last-child::before { display: none; }
 .stepbar-num {
   width: 28px; height: 28px; display: grid; place-items: center; position: relative; z-index: 1;
