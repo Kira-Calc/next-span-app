@@ -10,6 +10,7 @@ struct BatchView: View {
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
         List {
             if let s = scanned {
                 Section {
@@ -67,13 +68,13 @@ struct BatchView: View {
             }
 
             Section {
-                LabeledContent("Timber") { Money(font: .body.weight(.semibold)) }
+                LabeledContent("Timber") { Money(font: .body.weight(.semibold)).foregroundStyle(Color.nsInk) }
                 LabeledContent("De-nailing", value: "Included")
                 LabeledContent("Machining") { StatusTag(text: "To quote", kind: .quote) }
                 LabeledContent("Delivery") { StatusTag(text: "To quote", kind: .quote) }
                 LabeledContent("Waste allowance", value: "10% assumed")
                 LabeledContent {
-                    Money(font: .title2.weight(.bold))
+                    Money(font: .title2.weight(.bold)).foregroundStyle(Color.nsInk)
                 } label: {
                     Text("Known total").font(.headline)
                 }
@@ -82,6 +83,7 @@ struct BatchView: View {
             } footer: {
                 Text("Items marked to quote are not included.").font(.footnote.weight(.semibold))
             }
+            .id("price")
 
             Section {
                 VStack(alignment: .leading, spacing: 6) {
@@ -120,6 +122,12 @@ struct BatchView: View {
         }
         .alert("Prototype: download not available", isPresented: $downloadNote) {
             Button("OK", role: .cancel) {}
+        }
+        .onAppear {
+            if state.scrollTarget == "price" {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { proxy.scrollTo("price", anchor: .top) }
+            }
+        }
         }
     }
 }

@@ -86,6 +86,7 @@ struct GradeView: View {
                 } header: {
                     NumberedHeader(number: "03", title: "Record for this piece")
                 }
+                .id("record")
 
                 Section {
                     Button {
@@ -121,8 +122,8 @@ struct GradeView: View {
                     .presentationDetents([.medium])
             }
             .onAppear {
-                if state.scrollTarget == "downgrade" {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { proxy.scrollTo("downgrade", anchor: .center) }
+                if let t = state.scrollTarget, t == "downgrade" || t == "record" {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { proxy.scrollTo(t, anchor: .center) }
                 }
             }
         }

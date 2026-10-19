@@ -93,6 +93,7 @@ struct StatusTag: View {
             Text(text.uppercased())
                 .font(.caption.weight(.bold))
                 .tracking(0.6)
+                .foregroundStyle(Color.nsInk)
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)

@@ -112,6 +112,8 @@ final class AppState {
         case "locked": listed = true; scrollTarget = "rebate"
         case "shortlisted": shortlisted = true
         case "accepted": accepted = true
+        case "price": scrollTarget = "price"
+        case "record": scrollTarget = "record"
         default: break
         }
     }
